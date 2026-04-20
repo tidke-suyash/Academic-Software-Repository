@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCA & Eng App Repository</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --card-bg: #0a0a0c;
+            --accent: #00e5ff; /* Neon Cyan */
+            --accent-glow: rgba(0, 229, 255, 0.4);
+            --secondary: #ff00ea; /* Neon Magenta */
+            --code-text: #64ffda;
+            --text-main: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --border: rgba(0, 229, 255, 0.15);
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Alive Background Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 0, 234, 0.03) 0%, transparent 50%);
+            animation: backgroundShift 15s infinite alternate ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes backgroundShift {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(5deg) scale(1.1); }
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 10px var(--accent-glow); }
+            50% { box-shadow: 0 0 25px var(--accent-glow), 0 0 40px rgba(0, 229, 255, 0.2); }
+            100% { box-shadow: 0 0 10px var(--accent-glow); }
+        }
+
+        @keyframes borderBreathe {
+            0% { border-color: rgba(0, 229, 255, 0.2); }
+            50% { border-color: rgba(0, 229, 255, 0.6); }
+            100% { border-color: rgba(0, 229, 255, 0.2); }
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .terminal-loader {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--secondary);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(255, 0, 234, 0.5);
+        }
+
+        header h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            margin: 0 0 30px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 0 0 30px var(--accent-glow);
+        }
+
+        .search-container {
+            max-width: 650px;
+            margin: 0 auto 50px;
+            position: relative;
+        }
+
+        #appSearch {
+            width: 100%;
+            padding: 18px 30px;
+            background: rgba(10, 10, 12, 0.8);
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        #appSearch:focus {
+            animation: neonPulse 2s infinite;
+            border-color: #fff;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin: 60px 0 30px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(255, 0, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-title::before, .section-title::after {
+            content: "";
+            height: 1px;
+            width: 50px;
+            background: var(--secondary);
+            margin: 0 20px;
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1300px;
+            margin: 0 auto 60px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card.hidden { display: none; }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px var(--accent-glow);
+            z-index: 10;
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        .type-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--code-text);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 5px rgba(100, 255, 218, 0.3);
+        }
+
+        .card h3 { font-size: 1.5rem; margin: 0 0 12px; font-weight: 600; color: #fff; }
+        .card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; }
+
+        .btn {
+            display: inline-block;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--accent-glow), 0 0 30px var(--accent-glow);
+            text-shadow: none;
+        }
+
+        footer {
+            padding: 30px; 
+            text-align: center; 
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        footer p {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 11px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            color: var(--text-secondary);
+            text-shadow: 0 0 5px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="terminal-loader">System.out.println("Initiating Environment...");</div>
+        <h1>MASTER REPOSITORY</h1>
+        
+        <div class="search-container">
+            <input type="text" id="appSearch" placeholder="> Search binaries, IDEs, or tools..." onkeyup="filterApps()">
+        </div>
+    </header>
+
+    <div class="section-title">Software & Web Dev</div>
+    <div class="container">
+        <div class="card">
+            <span class="type-tag">Core Editor</span>
+            <h3>VS Code</h3>
+            <p>The universal, lightweight, and powerful editor for Web, Python, and front-end development.</p>
+            <a href="https://code.visualstudio.com/download" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Full IDE</span>
+            <h3>Visual Studio Community</h3>
+            <p>Heavyweight IDE required for C#, .NET, and advanced C++ application development.</p>
+            <a href="https://visualstudio.microsoft.com/downloads/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Java IDE</span>
+            <h3>IntelliJ IDEA</h3>
+            <p>The industry-standard environment for enterprise-level Java development.</p>
+            <a href="https://www.jetbrains.com/idea/download/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Python IDE</span>
+            <h3>PyCharm</h3>
+            <p>Intelligent Python IDE. Perfect for AI, machine learning, and backend frameworks.</p>
+            <a href="https://www.jetbrains.com/pycharm/download/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Version Control</span>
+            <h3>Git & Git Bash</h3>
+            <p>Non-negotiable terminal tool for source code management and GitHub repository tracking.</p>
+            <a href="https://git-scm.com/downloads" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Local Server</span>
+            <h3>XAMPP Suite</h3>
+            <p>Complete local server environment bundled with Apache, MariaDB, and PHP.</p>
+            <a href="https://www.apachefriends.org/download.html" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+    </div>
+
+    <div class="section-title">Hardware & Engineering</div>
+    <div class="container">
+        <div class="card">
+            <span class="type-tag">Microcontroller IDE</span>
+            <h3>Keil µVision</h3>
+            <p>The absolute standard for writing, compiling, and debugging ARM and 8051 embedded systems.</p>
+            <a href="https://www.keil.com/download/product/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Circuit Simulation</span>
+            <h3>Proteus Design Suite</h3>
+            <p>Essential for simulating electronic circuits and microcontroller executions before physical builds.</p>
+            <a href="https://www.labcenter.com/downloads/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Prototyping</span>
+            <h3>Arduino IDE</h3>
+            <p>The starting point for IoT, basic microcontroller programming, and rapid hardware prototyping.</p>
+            <a href="https://www.arduino.cc/en/software" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Math & Modeling</span>
+            <h3>MATLAB</h3>
+            <p>The heavyweight champion for mathematical modeling, signal processing, and matrix calculations.</p>
+            <a href="https://www.mathworks.com/downloads/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">3D CAD Drafting</span>
+            <h3>AutoCAD</h3>
+            <p>The universal standard for 2D drafting and basic 3D modeling across engineering disciplines.</p>
+            <a href="https://www.autodesk.com/education/edu-software/overview" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+    </div>
+
+    <div class="section-title">Finance & Data Science</div>
+    <div class="container">
+        <div class="card">
+            <span class="type-tag">Accounting</span>
+            <h3>Tally Prime</h3>
+            <p>The industry standard for accounting, inventory, and taxation management in the enterprise sector.</p>
+            <a href="https://tallysolutions.com/download/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Data Visualization</span>
+            <h3>Power BI Desktop</h3>
+            <p>Turn massive financial databases and spreadsheets into readable, interactive neon dashboards.</p>
+            <a href="https://powerbi.microsoft.com/en-us/desktop/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Statistical Computing</span>
+            <h3>RStudio</h3>
+            <p>Advanced tool for R programming. Essential for statistical data science and quantitative finance.</p>
+            <a href="https://posit.co/download/rstudio-desktop/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Database GUI</span>
+            <h3>MongoDB Compass</h3>
+            <p>The official interactive GUI for managing NoSQL document-based databases.</p>
+            <a href="https://www.mongodb.com/try/download/compass" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+    </div>
+
+    <div class="section-title">Design, Media & Entertainment</div>
+    <div class="container">
+        <div class="card">
+            <span class="type-tag">UI/UX Design</span>
+            <h3>Figma Desktop</h3>
+            <p>Professional interface design tool for app prototyping, web layouts, and metaverse aesthetics.</p>
+            <a href="https://www.figma.com/downloads/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Graphic Design</span>
+            <h3>Canva Desktop</h3>
+            <p>Fast-track graphic design. Essential for posters, stickers, and marketing assets.</p>
+            <a href="https://www.canva.com/download/windows/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Broadcasting</span>
+            <h3>OBS Studio</h3>
+            <p>Free and open source software for video recording and live streaming.</p>
+            <a href="https://obsproject.com/download" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Communications</span>
+            <h3>Discord</h3>
+            <p>Voice, video and text chat platform. Essential for gaming, dev communities, and study groups.</p>
+            <a href="https://discord.com/download" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Audio Streaming</span>
+            <h3>Spotify</h3>
+            <p>The ultimate digital music service. Power your coding and design sessions with the right frequencies.</p>
+            <a href="https://www.spotify.com/download/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Gaming Platform</span>
+            <h3>Steam</h3>
+            <p>The ultimate destination for playing, discussing, and creating games.</p>
+            <a href="https://store.steampowered.com/about/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+        <div class="card">
+            <span class="type-tag">Universal Player</span>
+            <h3>VLC Media</h3>
+            <p>Open-source powerhouse for playing absolutely any video or audio format offline.</p>
+            <a href="https://www.videolan.org/vlc/" target="_blank" class="btn">INITIALIZE</a>
+        </div>
+    </div>
+
+    <footer>
+      <p>Established 2026 // Tidke's Creation // MET IOM NSK</p>
+    </footer>
+
+    <script>
+        function filterApps() {
+            let input = document.getElementById('appSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].querySelector('h3').innerText.toLowerCase();
+                let desc = cards[i].querySelector('p').innerText.toLowerCase();
+                let tag = cards[i].querySelector('.type-tag').innerText.toLowerCase();
+                
+                if (title.includes(input) || desc.includes(input) || tag.includes(input)) {
+                    cards[i].classList.remove('hidden');
+                } else {
+                    cards[i].classList.add('hidden');
+                }
+            }
+        }
+
+        // Add random flickering effect to random cards to enhance the neon vibe
+        setInterval(() => {
+            const cards = document.querySelectorAll('.card');
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            randomCard.style.boxShadow = "0 0 30px var(--accent-glow)";
+            setTimeout(() => {
+                randomCard.style.boxShadow = "none";
+            }, 200);
+        }, 3000);
+    </script>
+
+</body>
+</html>
